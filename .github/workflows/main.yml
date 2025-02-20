@@ -1,0 +1,31 @@
+name: Run Crypto Price Checker
+
+on:
+  push:   # اجرای خودکار هنگام ثبت تغییرات در گیت‌هاب
+  schedule:
+    - cron: "0 * * * *"  # اجرای هر یک ساعت
+
+jobs:
+  run_script:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 دریافت سورس‌کد
+        uses: actions/checkout@v4
+
+      - name: 🐍 تنظیم پایتون
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.x"
+
+      - name: 📦 نصب وابستگی‌ها
+        run: |
+          python -m pip install --upgrade pip
+          pip install ccxt requests
+
+      - name: 🚀 اجرای اسکریپت
+        run: python main.py
+
+      - name: 📝 نمایش لاگ در صورت خطا
+        if: failure()
+        run: cat /home/runner/.cache/pip/log/debug.log || true
